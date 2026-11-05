@@ -71,9 +71,9 @@ FAQ answers are in `src/prospective.html` and `src/pt/prospective.html`. Check a
 
 ### Swap the hero image
 
-The Home page image is deliberately easy to replace, and its licensing and branding still need checking (see "Open items" below). Export your new image at widths of 640, 1024, 1600, and 2172 pixels in WebP format (the free site squoosh.app does this), and overwrite the files in `src/assets/hero/` using the same names. Then update both descriptions under `[hero]` in `src/site.toml`, and replace `src/assets/og-image.jpg` (1200 by 630 pixels), the picture used in link previews.
+The Home page image is deliberately easy to replace, and its licensing and branding still need checking (see "Open items" below). Export your new image at widths of 640, 1024, 1600, and 2000 pixels in WebP format (the free site squoosh.app does this), and overwrite the files in `src/assets/hero/` using the same names. Then update both descriptions under `[hero]` in `src/site.toml`, and replace `src/assets/og-image.jpg` (1200 by 630 pixels), the picture used in link previews.
 
-Pick a wide image, about three times as wide as it is tall, with the subject in the left half and a dark, calm right half. The text sits directly on the right side with no dark overlay, so it has to stay readable on its own. The only overlay is the short fade into the page along the bottom edge.
+Pick an image four times as wide as it is tall, with the subject between about 22% and 60% of its width and a dark, calm right side. The text sits directly on the right side with no dark overlay, so it has to stay readable on its own. The only overlay is the short fade into the page along the bottom edge. For a different composition, adjust the numbers in the hero section of `src/input.css`.
 
 To remove the image entirely, delete the `img` tag from `src/partials/hero-image.html`. The hero falls back to a plain dark background.
 

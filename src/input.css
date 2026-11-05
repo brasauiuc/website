@@ -7,6 +7,7 @@
 @theme {
   --color-ink: #0b1a12;
   --color-ink-2: #10241a;
+  --color-band: #18352a;
   --color-line: rgb(237 241 238 / 0.12);
   --color-cream: #edf1ee;
   --color-muted: #a9b8ae;
@@ -320,16 +321,17 @@
     padding: 12px;
   }
 
-  /* ---------- home hero: image on top with text below it, then side by side once the
-     statue clears the text. The only overlay is the fade into the page, which is as tall as
-     the bottom padding so it stays below the text. Check readability when swapping the image.
-     Height follows the width so the statue never grows under the text. ---------- */
+  /* ---------- home hero: image on top with text below it, then side by side at 1280px.
+     The only overlay is the fade into the page, which is as tall as the bottom padding so it
+     stays below the text. The numbers below fit a photo whose statue spans 22% to 60% of its
+     width: if you swap the photo for a different composition, adjust them. ---------- */
   .hero {
     --hero-fade: clamp(72px, 5.6vw, 120px);
+    --media-height: min(72vw, 52svh);
     position: relative;
     display: flex;
     align-items: flex-end;
-    padding-top: 52svh;
+    padding-top: var(--media-height);
     padding-bottom: 56px;
     overflow: hidden;
     background: var(--color-ink);
@@ -338,7 +340,7 @@
   .hero-media {
     position: absolute;
     inset: 0 0 auto;
-    height: 52svh;
+    height: var(--media-height);
     background: var(--color-ink-2);
   }
 
@@ -346,7 +348,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 18% top;
+    object-position: 36% top;
   }
 
   .hero-media::after {
@@ -384,9 +386,13 @@
   }
 
   @media (min-width: 80rem) {
+    /* --photo-width is the widest of: enough to reach the left edge, enough to reach the right
+       edge, and enough for the hero to fit its text. The margin then puts the statue's right
+       side just before the text column, which starts 140px right of the screen's center. */
     .hero {
+      --photo-width: max(83.3vw + 183px, 125vw - 275px, 1944px);
       align-items: center;
-      min-height: min(42vw, 760px);
+      min-height: min(var(--photo-width) / 4, 900px);
       padding-block: 84px var(--hero-fade);
     }
 
@@ -396,7 +402,10 @@
     }
 
     .hero-media img {
-      object-position: 0% center;
+      width: var(--photo-width);
+      max-width: none;
+      margin-left: calc(50vw + 110px - var(--photo-width) * 0.6);
+      object-position: center;
     }
 
     .hero-inner {
@@ -418,8 +427,27 @@
     padding-block: 72px;
   }
 
-  .section + .section {
+  /* A full-width color change is what separates home page sections. */
+  .band {
+    background: var(--color-band);
+  }
+
+  .band .section {
+    padding-block: 64px;
+  }
+
+  .band .rows {
+    margin-top: 32px;
+  }
+
+  .site-footer {
+    margin-top: 32px;
     border-top: 1px solid var(--color-line);
+  }
+
+  main:has(> .band:last-child) + .site-footer {
+    margin-top: 0;
+    border-top: 0;
   }
 
   .section h2 {
