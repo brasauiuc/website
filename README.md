@@ -86,7 +86,7 @@ FAQ answers are in `src/prospective.html` and `src/pt/prospective.html`. Check a
 
 ### Swap the hero image
 
-The Home page image is deliberately easy to replace, and its licensing and branding still need checking (see "Open items" below). Export your new image at widths of 640, 1024, 1600, and 2000 pixels in WebP format (the free site squoosh.app does this), and overwrite the files in `src/assets/hero/` using the same names. Then update both descriptions under `[hero]` in `src/site.toml`, and replace `src/assets/og-image.jpg` (1200 by 630 pixels), the picture used in link previews.
+The Home page image is deliberately easy to replace. Export your new image at widths of 640, 1024, 1600, and 2000 pixels in WebP format (the free site squoosh.app does this), and overwrite the files in `src/assets/hero/` using the same names. Then update both descriptions under `[hero]` in `src/site.toml`, and replace `src/assets/og-image.jpg` (1200 by 630 pixels), the picture used in link previews.
 
 Pick an image four times as wide as it is tall, with the subject between about 22% and 60% of its width and a dark, calm right side. The text sits directly on the right side with no dark overlay, so it has to stay readable on its own. The only overlay is the short fade into the page along the bottom edge. For a different composition, adjust the numbers in the hero section of `src/input.css`.
 
@@ -152,10 +152,10 @@ Update this table at every board handoff. Record names only, and never put passw
 
 | Account | Used for | Name | Current owner |
 | --- | --- | --- | --- |
-| GitHub organization | Code and hosting | TODO | TODO |
-| Domain registrar | The domain, renews yearly | TODO | TODO |
-| Chapter Gmail | `CONTACT_EMAIL`, owns the Google Forms and their responses | TODO | TODO |
-| Website Data Google Sheet | Events and board members on the site. Should be owned by the chapter Gmail | Website Data | TODO |
+| GitHub organization | Code and hosting | brasauiuc | Felipe Bonchristiano |
+| Domain registrar | The domain, renews yearly | uiucbrasa | Felipe Bonchristiano |
+| Chapter Gmail | `CONTACT_EMAIL`, owns the Google Forms and their responses | uiuc@brasalocal.org | N/A |
+| Website Data Google Sheet | Events and board members on the site. | N/A | uiuc@brasalocal.org |
 
 When the board changes, add the new people to the GitHub organization, transfer the registrar and Gmail access, and confirm the domain's renewal date and payment method. An expired domain is the most likely way for this site to go down.
 
