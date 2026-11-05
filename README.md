@@ -70,11 +70,11 @@ Everything in this file is public, so never put form responses, phone numbers, o
 | `order` | Position on the page, starting at 1 |
 | `name` | Required |
 | `role_pt`, `role_en` | Both required |
-| `major` | Required, and stays in English on both versions of the site |
+| `major` | Required, and stays in English on both versions of the site. For two majors, write `First, Second` and each goes on its own line |
 | `class_year` | Optional, shown as "Class of 2029" in both languages |
 | `image_path` | Optional, for example `src/assets/board/ana.jpg`. Without a photo, the card shows initials |
 
-Events on or after today appear under "Come say hello.", soonest first. After their date passes they move to "Past events", where the 5 most recent are shown. To change that number, edit `PAST_EVENTS_SHOWN` in `build.py`. Older rows can stay in the sheet.
+Events on or after today appear under "Upcoming events", soonest first. After their date passes they move to "Past events", where the 5 most recent are shown. To change that number, edit `PAST_EVENTS_SHOWN` in `build.py`. Older rows can stay in the sheet.
 
 A sheet can't hold pictures, so upload each photo to the repository with Add file, then Upload files, in the folder its `image_path` names. Board photos should be square, about 400 by 400 pixels, and under 200 KB. Event images should be under 300 KB, and they're shown whole, never cropped. Remove a former member's photo when they leave.
 
@@ -198,4 +198,4 @@ Build errors explain what's wrong and where. The most common ones are a problem 
 
 ## Licenses
 
-Fraunces and Manrope are used under the SIL Open Font License. Their license files are in `src/assets/fonts/`.
+Manrope is used under the SIL Open Font License. Its license file is in `src/assets/fonts/`.

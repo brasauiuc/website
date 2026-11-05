@@ -10,7 +10,6 @@ description: Every Brazilian student at Illinois, past, present, and future, one
     <div class="hero-content">
       <p class="eyebrow">Brazilian Student Association</p>
       <h1 id="hero-title">BRASA at&nbsp;<span class="text-illini">UIUC</span></h1>
-      <p class="tagline">The home for Brazilians at Illinois.</p>
       <p class="mission">Every Brazilian student at Illinois — past, present, and future — one intro away from the person who can help them.</p>
     </div>
   </div>
@@ -19,7 +18,6 @@ description: Every Brazilian student at Illinois, past, present, and future, one
 <div class="tricolor"></div>
 
 <section class="section section-compact" id="sobre">
-  <p class="label">About</p>
   <h2>More than a community. A network.</h2>
   <p class="lead">BRASA at UIUC keeps a registry of Brazilian students and alumni from Illinois, and the board makes intros by hand. There is no public directory: member details never appear on this site.</p>
 
@@ -44,16 +42,18 @@ description: Every Brazilian student at Illinois, past, present, and future, one
 
 <div class="band">
 <section class="section" id="eventos">
-  <p class="label">Events</p>
   <h2>Come say hello.</h2>
   <!-- Events come from the Google Sheet. See README.md. -->
-  <div class="rows">
-    {{#UPCOMING_EVENTS}}{{UPCOMING_EVENTS}}{{/UPCOMING_EVENTS}}
-    {{^UPCOMING_EVENTS}}<p class="py-6 text-muted">Nothing scheduled right now. Check back soon.</p>{{/UPCOMING_EVENTS}}
+  <div class="events-group">
+    <h3>Upcoming events</h3>
+    <div class="rows">
+      {{#UPCOMING_EVENTS}}{{UPCOMING_EVENTS}}{{/UPCOMING_EVENTS}}
+      {{^UPCOMING_EVENTS}}<p class="py-6 text-muted">Nothing scheduled right now. Check back soon.</p>{{/UPCOMING_EVENTS}}
+    </div>
   </div>
   {{#PAST_EVENTS}}
-  <div class="events-past">
-    <h2>Past events</h2>
+  <div class="events-group">
+    <h3>Past events</h3>
     <div class="rows">
       {{PAST_EVENTS}}
     </div>

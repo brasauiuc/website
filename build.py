@@ -186,6 +186,11 @@ def image_url_path(tab: str, row: dict[str, str]) -> str:
     return html.escape(found.relative_to(SRC).as_posix())
 
 
+def major_html(major: str) -> str:
+    """Puts each major on its own line, splitting at commas that aren't inside parentheses."""
+    return re.sub(r",\s*(?![^()]*\))", ",<br>", html.escape(major))
+
+
 def load_board(config: dict) -> list[dict[str, str]]:
     rows = fetch_tab(config, "Board", "board_gid", BOARD_COLUMNS)
     for row in rows:
@@ -198,7 +203,7 @@ def load_board(config: dict) -> list[dict[str, str]]:
             "name": html.escape(row["name"]),
             "role_en": html.escape(row["role_en"]),
             "role_pt": html.escape(row["role_pt"]),
-            "major": html.escape(row["major"]),
+            "major": major_html(row["major"]),
             "class_text": html.escape(f"Class of {row['class_year']}") if row["class_year"] else "",
             "image": image_url_path("Board", row),
             "initials": html.escape(initials(row["name"])),

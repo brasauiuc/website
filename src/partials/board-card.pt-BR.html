@@ -1,8 +1,8 @@
-<li class="cell">
+<li class="cell board-card">
   {{#image}}<img class="avatar" src="{{BASE}}/{{image}}" width="120" height="120" loading="lazy" alt="Retrato de {{name}}">{{/image}}
   {{^image}}<div class="avatar" aria-hidden="true">{{initials}}</div>{{/image}}
   <h2 class="text-[22px]/tight">{{name}}</h2>
-  <p class="text-cream!">{{role}}</p>
-  <p class="mt-1!">{{major}}</p>
-  {{#class_text}}<p class="mt-1!">{{class_text}}</p>{{/class_text}}
+  <p class="board-role">{{role}}</p>
+  <p class="board-major">{{major}}</p>
+  {{#class_text}}<p class="board-class">{{class_text}}</p>{{/class_text}}
 </li>
