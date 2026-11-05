@@ -4,10 +4,13 @@
   <div class="wrap flex items-center justify-between gap-3 py-3">
     <a class="brand" href="{{BASE}}/">
       <img src="{{BASE}}/assets/logo-120.png" width="35" height="40" alt="">
-      <span class="sr-only min-[340px]:not-sr-only">BRASA at UIUC</span>
+      <span class="sr-only min-[385px]:not-sr-only">BRASA at UIUC</span>
     </a>
-    <div class="flex items-center gap-2 min-[400px]:gap-3 lg:gap-8">
+    <div class="flex items-center gap-2 min-[480px]:gap-3 lg:gap-8">
+      <!-- Events stays visible on phones too, so it lives here and not in nav-links. -->
+      <a class="nav-events lg:hidden" href="{{BASE}}/#eventos">Events</a>
       <nav class="nav-links hidden items-center gap-7 lg:flex" aria-label="Main">
+        <a href="{{BASE}}/#eventos">Events</a>
         {{> nav-links}}
       </nav>
       <!-- LANGUAGE BUTTON: goes to this same page in the other language. -->
@@ -19,7 +22,7 @@
       <details class="menu lg:hidden">
         <summary>
           <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3.5h14M1 8h14M1 12.5h14" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span class="sr-only min-[380px]:not-sr-only">Menu</span>
+          <span class="sr-only min-[480px]:not-sr-only">Menu</span>
         </summary>
         <nav class="nav-links menu-panel" aria-label="Main menu">
           {{> nav-links}}
