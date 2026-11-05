@@ -1,8 +1,8 @@
 <li class="cell">
-  {{#photo}}<img class="avatar" src="{{BASE}}/assets/board/{{photo}}" width="96" height="96" loading="lazy" alt="Portrait of {{plain_name}}">{{/photo}}
-  {{^photo}}<div class="avatar" aria-hidden="true">{{initials}}</div>{{/photo}}
+  {{#image}}<img class="avatar" src="{{BASE}}/{{image}}" width="120" height="120" loading="lazy" alt="Portrait of {{name}}">{{/image}}
+  {{^image}}<div class="avatar" aria-hidden="true">{{initials}}</div>{{/image}}
   <h2 class="text-[22px]/tight">{{name}}</h2>
-  <p>{{role}}</p>
+  <p class="text-cream!">{{role}}</p>
   <p class="mt-1!">{{major}}</p>
-  {{#linkedin}}<p><a class="link" href="{{linkedin}}" aria-label="{{plain_name}} on LinkedIn">LinkedIn</a></p>{{/linkedin}}
+  {{#class_text}}<p class="mt-1!">{{class_text}}</p>{{/class_text}}
 </li>

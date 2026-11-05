@@ -1,4 +1,4 @@
-# Builds the site and publishes it to GitHub Pages on every push to main.
+# Builds the site and publishes it to GitHub Pages on every push to main, and once a day.
 # One-time setup: repo Settings > Pages > Source > "GitHub Actions". See README.md.
 name: Deploy site
 
@@ -6,6 +6,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Picks up Google Sheet edits and moves finished events to "past", shortly after midnight on
+  # campus. GitHub pauses schedules on public repos after 60 days without activity (see README.md).
+  schedule:
+    - cron: "15 7 * * *"
 
 permissions:
   contents: read

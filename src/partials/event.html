@@ -1,8 +1,11 @@
-<article class="row">
-  <p class="row-key">{{date}}</p>
+<article class="event">
+  {{#image}}<img class="event-image" src="{{BASE}}/{{image}}" loading="lazy" alt="Image for {{title}}">{{/image}}
   <div>
-    <h3 class="text-xl">{{title}}</h3>
-    {{#description}}<p class="row-note">{{description}}</p>{{/description}}
+    <p class="row-key">{{when}}</p>
+    <h3 class="mt-1">{{title}}</h3>
+    {{#description}}<p class="event-text">{{description}}</p>{{/description}}
+    {{#location}}<p class="row-note">{{location}}</p>{{/location}}
+    {{#rsvp}}<a class="btn btn-small mt-4 mr-5" href="{{rsvp}}">RSVP</a>{{/rsvp}}
+    {{#instagram}}<a class="ghost mt-4 text-sm" href="{{instagram}}">See on Instagram <span aria-hidden="true">→</span></a>{{/instagram}}
   </div>
-  {{#where}}<p class="text-sm text-muted">{{where}}</p>{{/where}}
 </article>

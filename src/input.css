@@ -14,6 +14,7 @@
   --color-verde: #009c3b;
   --color-amarelo: #ffdf00;
   --color-azul: #1f4fbf;
+  --color-illini: #ff5f05;
   --color-on-amarelo: #0a2e18;
 
   --font-serif: "Fraunces", Georgia, serif;
@@ -136,6 +137,11 @@
   .btn:hover {
     transform: translateY(-1px);
     box-shadow: 0 6px 24px rgb(255 223 0 / 0.25);
+  }
+
+  .btn-small {
+    padding: 9px 18px;
+    font-size: 14px;
   }
 
   .ghost {
@@ -548,6 +554,53 @@
     }
   }
 
+  /* ---------- events ---------- */
+  .event {
+    display: grid;
+    gap: 16px;
+    padding-block: 24px;
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  .event-image {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .event-text {
+    max-width: 62ch;
+    margin-top: 8px;
+    color: var(--color-cream);
+    font-size: 15px;
+  }
+
+  .events-past {
+    margin-top: 56px;
+  }
+
+  .events-past h2 {
+    font-size: 26px;
+  }
+
+  .events-past .rows {
+    margin-top: 20px;
+  }
+
+  @media (min-width: 48rem) {
+    .event:has(> img) {
+      grid-template-columns: 200px 1fr;
+      align-items: start;
+      gap: 32px;
+    }
+
+    .events-past .event:has(> img) {
+      grid-template-columns: 160px 1fr;
+      gap: 24px;
+    }
+  }
+
   /* ---------- FAQ accordion ---------- */
   .faq {
     margin-top: 48px;
@@ -592,8 +645,8 @@
   .avatar {
     display: grid;
     place-items: center;
-    width: 96px;
-    height: 96px;
+    width: 120px;
+    height: 120px;
     margin-bottom: 20px;
     border: 1px solid var(--color-line);
     border-radius: 50%;

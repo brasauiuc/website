@@ -12,7 +12,9 @@ Here is where things live:
 
 | What | Where |
 | --- | --- |
-| Links, emails, events, board members | `src/site.toml` |
+| Events and board members | The [Website Data Google Sheet](https://docs.google.com/spreadsheets/d/1qxJdhrN59IcJeYRflSpPxivYRztom4ReyoHbCc2xX64) |
+| Event and board photos | `src/assets/events/` and `src/assets/board/` |
+| Links, emails, domain | `src/site.toml` |
 | English pages | `src/index.html`, `src/prospective.html`, `src/alumni.html`, `src/board.html`, `src/contact.html`, `src/404.html` |
 | Portuguese pages | The same file names inside `src/pt/` |
 | Menu items | `src/partials/nav-links.html` and `src/partials/nav-links.pt-BR.html` |
@@ -44,26 +46,39 @@ Open `src/site.toml` and replace the value under `[links]`, keeping the quotes. 
 | `CONTACT_EMAIL` | Chapter email address, without `mailto:` | Contact, footer |
 | `DOMAIN` | The real domain, replaces `DOMAIN_PLACEHOLDER` | Link previews, `CNAME` |
 
-### Add or change a board member
+### Add or change events and board members
 
-Open `src/site.toml` and find the `[[board]]` blocks. Each block is one card, in the order written, so copy a block to add someone and delete a block to remove them.
+Both live in the [Website Data Google Sheet](https://docs.google.com/spreadsheets/d/1qxJdhrN59IcJeYRflSpPxivYRztom4ReyoHbCc2xX64), one tab each. Edit a row and the site updates by itself overnight, shortly after midnight in Champaign. To publish sooner, open the repository's Actions tab, choose "Deploy site", and click "Run workflow".
 
-```toml
-[[board]]
-name = "Full Name"
-role = "President"
-role_pt = "Presidente"
-major = "Computer Science"
-major_pt = "Ciência da Computação"
-photo = "full-name.jpg"
-linkedin = "https://www.linkedin.com/in/example"
-```
+A row only appears on the site if its `include` box is checked, so you can prepare a row in advance or hide one without deleting it. Don't rename the columns or tabs, because the build reads them by name.
 
-`photo` and `linkedin` are optional, so delete those lines if unused. Without a photo the card shows initials. Photos go in `src/assets/board/` and should be square, about 400 by 400 pixels, and under 200 KB. Upload them on github.com with Add file, then Upload files. Remove a former member's photo when they leave.
+Everything in this file is public, so never put form responses, phone numbers, or member data in it. Anyone who can edit it can change the live site, so keep the editor list short.
 
-### Add or remove an event
+| Events column | Notes |
+| --- | --- |
+| `date` | Required, written like `2026-09-25` |
+| `start_time`, `end_time` | Optional, written like `8:00 PM` |
+| `title` | Required, the same in both languages |
+| `description_pt`, `description_en` | Fill in both, or leave both empty |
+| `location` | Optional, the same in both languages |
+| `rsvp_url` | Optional, must start with `https://`, and hidden once the date has passed |
+| `image_path` | Optional, for example `src/assets/events/pelada.jpg` |
+| `instagram_link` | Optional, must start with `https://` |
 
-Open `src/site.toml` and edit the `[[events]]` blocks the same way. Remove events once they've passed, because the site doesn't do this for you. With no blocks left, the Home page says nothing is scheduled. Only `date` and `title` are required. Every field also needs a Portuguese version ending in `_pt`, such as `title_pt`.
+| Board column | Notes |
+| --- | --- |
+| `order` | Position on the page, starting at 1 |
+| `name` | Required |
+| `role_pt`, `role_en` | Both required |
+| `major` | Required, and stays in English on both versions of the site |
+| `class_year` | Optional, shown as "Class of 2029" in both languages |
+| `image_path` | Optional, for example `src/assets/board/ana.jpg`. Without a photo, the card shows initials |
+
+Events on or after today appear under "Come say hello.", soonest first. After their date passes they move to "Past events", where the 5 most recent are shown. To change that number, edit `PAST_EVENTS_SHOWN` in `build.py`. Older rows can stay in the sheet.
+
+A sheet can't hold pictures, so upload each photo to the repository with Add file, then Upload files, in the folder its `image_path` names. Board photos should be square, about 400 by 400 pixels, and under 200 KB. Event images should be under 300 KB, and they're shown whole, never cropped. Remove a former member's photo when they leave.
+
+If a row has a problem, like a badly written date or a photo that isn't uploaded, the build stops and names the tab and row. The current site stays up until it's fixed.
 
 ### Answer the FAQ
 
@@ -83,7 +98,7 @@ Copy an existing page in `src/`, change the comment at the top, and add a link i
 
 ## Run the build on your own computer
 
-This is optional, since github.com does it for you. You need Python 3.11 or newer from python.org and nothing else.
+This is optional, since github.com does it for you. You need Python 3.11 or newer from python.org and an internet connection, because the build reads the Google Sheet.
 
 ```sh
 python3 build.py
@@ -94,11 +109,15 @@ Then open http://localhost:8000. On Windows, use `py` instead of `python3`. The 
 
 ## How deployment works
 
-Every push to `main` runs `.github/workflows/deploy.yml` on GitHub's servers. It runs `build.py`, which fills the pages into `dist/` and compiles the CSS with Tailwind, then publishes `dist/` to GitHub Pages. The workflow can also be started by hand from the Actions tab with "Run workflow".
+Every push to `main` runs `.github/workflows/deploy.yml` on GitHub's servers, and so does a daily schedule shortly after midnight in Champaign. It runs `build.py`, which reads the Google Sheet, fills the pages into `dist/`, and compiles the CSS with Tailwind, then publishes `dist/` to GitHub Pages. The workflow can also be started by hand from the Actions tab with "Run workflow".
+
+The build makes every link to another website open in a new tab, so there's nothing to add by hand. Links between pages of this site stay in the same tab.
 
 The site has no backend, database, analytics, cookies, or JavaScript. All data collection happens in external Google Forms.
 
 To set up a new repository once, go to Settings, then Pages, and set Source to "GitHub Actions". Deploys fail until this is done.
+
+GitHub pauses scheduled runs on public repositories after 60 days without activity, which can happen over a summer. If sheet edits stop appearing by themselves, open the Actions tab, choose "Deploy site", and click "Enable workflow" if GitHub offers it. "Run workflow" still works in the meantime.
 
 ## Point the custom domain at GitHub Pages
 
@@ -136,6 +155,7 @@ Update this table at every board handoff. Record names only, and never put passw
 | GitHub organization | Code and hosting | TODO | TODO |
 | Domain registrar | The domain, renews yearly | TODO | TODO |
 | Chapter Gmail | `CONTACT_EMAIL`, owns the Google Forms and their responses | TODO | TODO |
+| Website Data Google Sheet | Events and board members on the site. Should be owned by the chapter Gmail | Website Data | TODO |
 
 When the board changes, add the new people to the GitHub organization, transfer the registrar and Gmail access, and confirm the domain's renewal date and payment method. An expired domain is the most likely way for this site to go down.
 
@@ -155,11 +175,11 @@ The mobile menu and the FAQ accordion use the browser's built-in `details` eleme
 
 ## The two languages
 
-The rule is no mixing: English pages are entirely in English and Portuguese pages are entirely in Portuguese. Don't add Portuguese labels to English pages, or the reverse. Names like BRASA at UIUC, Instagram, and SSN stay as they are in both.
+The rule is no mixing: English pages are entirely in English and Portuguese pages are entirely in Portuguese. Don't add Portuguese labels to English pages, or the reverse. Names like BRASA at UIUC, Instagram, and SSN stay as they are in both. So do a few things by choice: event titles and locations, board majors, and the "Class of" line.
 
 English lives at the normal addresses and Portuguese under `/pt/`, for example `/alumni.html` and `/pt/alumni.html`. Each language has its own pages in `src/` and `src/pt/`, and its own header, footer, menu, and board card in `src/partials/`, where the Portuguese files end in `.pt-BR.html`. The EN/PT button in the header goes to the same page in the other language, and all other links stay within the current language.
 
-The build protects this rule in two ways. It stops if a page has no twin in the other language, and it stops if an event or board member is missing a Portuguese field in `src/site.toml`.
+The build protects this rule in two ways. It stops if a page has no twin in the other language, and it stops if an event or board member in the Google Sheet is missing a translated field.
 
 Two things can't follow the rule by themselves. Google Forms are outside this site, so they appear in whatever language they were written in. GitHub Pages also has only one error page for mistyped addresses, so a broken `/pt/` link lands on the English 404, where the PT button leads to the Portuguese one.
 
@@ -169,7 +189,7 @@ The Tailwind version is pinned in `build.py`, and its download is verified again
 
 The GitHub Actions in `deploy.yml` are pinned to exact versions. If deploys start failing with a message that an action is deprecated, update that action to its latest release, using the commit ID shown on its releases page.
 
-Build errors explain what's wrong and where. The most common one is a missing quote in `src/site.toml`, and the error gives the line number.
+Build errors explain what's wrong and where. The most common ones are a problem in a Google Sheet row, where the error gives the tab and row, and a missing quote in `src/site.toml`, where it gives the line number.
 
 ## Open items
 

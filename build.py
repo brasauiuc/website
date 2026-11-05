@@ -2,9 +2,11 @@
 """Builds the website from src/ into dist/. New here? Read README.md first."""
 
 import argparse
+import csv
 import datetime
 import hashlib
 import html
+import io
 import os
 import platform
 import re
@@ -12,7 +14,9 @@ import shutil
 import stat
 import subprocess
 import sys
+import urllib.error
 import urllib.request
+import zoneinfo
 from pathlib import Path
 
 # Checked before importing tomllib, which would otherwise fail with a confusing traceback.
@@ -33,6 +37,25 @@ DOMAIN_PLACEHOLDER = "DOMAIN_PLACEHOLDER"
 ENGLISH = "en"
 PORTUGUESE = "pt-BR"
 PORTUGUESE_DIR = "pt"
+SHEET_URL = "https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid={gid}"
+CAMPUS_TIMEZONE = "America/Chicago"
+PAST_EVENTS_SHOWN = 5
+LARGE_IMAGE_BYTES = 1_000_000
+EVENT_COLUMNS = (
+    "date", "start_time", "end_time", "title", "description_pt", "description_en",
+    "location", "rsvp_url", "image_path", "instagram_link", "include",
+)
+BOARD_COLUMNS = ("order", "name", "role_pt", "role_en", "major", "class_year", "image_path", "include")
+MONTHS = {
+    ENGLISH: (
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December",
+    ),
+    PORTUGUESE: (
+        "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho",
+        "agosto", "setembro", "outubro", "novembro", "dezembro",
+    ),
+}
 
 
 def load_config() -> dict:
@@ -85,9 +108,6 @@ def display(value: str) -> str:
 
 
 def initials(name: str) -> str:
-    if name.startswith("TODO"):
-        return "?"
-
     words = name.split()
     return (words[0][0] + words[-1][0]).upper() if len(words) > 1 else words[0][0].upper()
 
@@ -105,32 +125,187 @@ def translated(item: dict[str, str], field: str, lang: str) -> str:
     return portuguese
 
 
-def board_values(member: dict[str, str], lang: str) -> dict[str, str]:
-    for field in ("name", "role", "major"):
-        if not member.get(field):
-            sys.exit(f"A [[board]] entry in src/site.toml is missing its {field}: {member}")
+def fetch_tab(config: dict, tab: str, gid_key: str, columns: tuple[str, ...]) -> list[dict[str, str]]:
+    """Returns the rows with include checked, adding "row" so errors can name the spreadsheet line."""
+    url = SHEET_URL.format(sheet_id=config["sheet"]["id"], gid=config["sheet"][gid_key])
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            text = response.read().decode("utf-8-sig")
+    except (urllib.error.URLError, TimeoutError) as error:
+        sys.exit(f"Could not read the {tab} tab of the Google Sheet ({error}). Is it shared with anyone with the link?")
 
-    photo = member.get("photo", "")
-    if photo and not (SRC / "assets" / "board" / photo).exists():
-        sys.exit(f"Board photo not found: put {photo} in src/assets/board/")
+    reader = csv.DictReader(io.StringIO(text))
+    missing = [column for column in columns if column not in (reader.fieldnames or [])]
+    if missing:
+        sys.exit(f"The {tab} tab of the Google Sheet is missing these columns: {', '.join(missing)}")
 
+    rows = []
+    for number, raw in enumerate(reader, start=2):
+        row = {key: " ".join((value or "").split()) for key, value in raw.items() if key in columns}
+        if row["include"].upper() == "TRUE":
+            rows.append({**row, "row": str(number)})
+
+    return rows
+
+
+def sheet_error(tab: str, row: dict[str, str], message: str) -> None:
+    sys.exit(f"Google Sheet, {tab} tab, row {row['row']}: {message}")
+
+
+def require(tab: str, row: dict[str, str], *fields: str) -> None:
+    for field in fields:
+        if not row[field]:
+            sheet_error(tab, row, f"{field} is empty.")
+
+
+def checked_url(tab: str, row: dict[str, str], field: str) -> str:
+    if row[field] and not row[field].startswith("https://"):
+        sheet_error(tab, row, f"{field} must start with https://")
+
+    return html.escape(row[field])
+
+
+def image_url_path(tab: str, row: dict[str, str]) -> str:
+    """Accepts .jpg and .jpeg interchangeably, the mix-up people are most likely to make in the sheet."""
+    if not row["image_path"]:
+        return ""
+
+    path = Path(row["image_path"])
+    if path.parts[:2] != ("src", "assets") or ".." in path.parts:
+        sheet_error(tab, row, f"image_path must start with src/assets/: {row['image_path']}")
+
+    alternates = {".jpg": ".jpeg", ".jpeg": ".jpg"}
+    candidates = [path, path.with_suffix(alternates.get(path.suffix.lower(), path.suffix))]
+    found = next((ROOT / candidate for candidate in candidates if (ROOT / candidate).is_file()), None)
+    if found is None:
+        sheet_error(tab, row, f"image not found, upload it to the repository: {row['image_path']}")
+
+    if found.stat().st_size > LARGE_IMAGE_BYTES:
+        print(f"WARNING: {found.relative_to(ROOT)} is over 1 MB and will slow the page down.")
+
+    return html.escape(found.relative_to(SRC).as_posix())
+
+
+def load_board(config: dict) -> list[dict[str, str]]:
+    rows = fetch_tab(config, "Board", "board_gid", BOARD_COLUMNS)
+    for row in rows:
+        require("Board", row, "name", "role_pt", "role_en", "major")
+
+    rows.sort(key=lambda row: float(row["order"]) if row["order"].replace(".", "", 1).isdigit() else float("inf"))
+
+    return [
+        {
+            "name": html.escape(row["name"]),
+            "role_en": html.escape(row["role_en"]),
+            "role_pt": html.escape(row["role_pt"]),
+            "major": html.escape(row["major"]),
+            "class_text": html.escape(f"Class of {row['class_year']}") if row["class_year"] else "",
+            "image": image_url_path("Board", row),
+            "initials": html.escape(initials(row["name"])),
+        }
+        for row in rows
+    ]
+
+
+def parse_date(row: dict[str, str]) -> datetime.date:
+    try:
+        return datetime.datetime.strptime(row["date"], "%Y-%m-%d").date()
+    except ValueError:
+        sheet_error("Events", row, f"date must look like 2026-09-25, not {row['date']}")
+
+
+def parse_time(row: dict[str, str], field: str) -> datetime.time | None:
+    if not row[field]:
+        return None
+
+    for time_format in ("%I:%M %p", "%I:%M:%S %p", "%H:%M"):
+        try:
+            return datetime.datetime.strptime(row[field], time_format).time()
+        except ValueError:
+            continue
+
+    sheet_error("Events", row, f"{field} must look like 8:00 PM, not {row[field]}")
+
+
+def format_time(moment: datetime.time, lang: str) -> str:
+    if lang == PORTUGUESE:
+        return f"{moment.hour}h{moment.minute:02d}" if moment.minute else f"{moment.hour}h"
+
+    return f"{moment.hour % 12 or 12}:{moment.minute:02d} {'AM' if moment.hour < 12 else 'PM'}"
+
+
+def format_when(date: datetime.date, start: datetime.time | None, end: datetime.time | None, lang: str) -> str:
+    month = MONTHS[lang][date.month - 1]
+    day = f"{date.day} de {month} de {date.year}" if lang == PORTUGUESE else f"{month} {date.day}, {date.year}"
+    if not start:
+        return day
+
+    hours = format_time(start, lang)
+    if end:
+        separator = " às " if lang == PORTUGUESE else " – "
+        hours += separator + format_time(end, lang)
+
+    return f"{day} · {hours}"
+
+
+def load_events(config: dict) -> list[dict]:
+    events = []
+    for row in fetch_tab(config, "Events", "events_gid", EVENT_COLUMNS):
+        require("Events", row, "date", "title")
+        if bool(row["description_pt"]) != bool(row["description_en"]):
+            sheet_error("Events", row, "description_pt and description_en must both be filled in, or both empty.")
+
+        date, start, end = parse_date(row), parse_time(row, "start_time"), parse_time(row, "end_time")
+        events.append(
+            {
+                "date": date,
+                "start": start or datetime.time.min,
+                "title": html.escape(row["title"]),
+                "location": html.escape(row["location"]),
+                "rsvp": checked_url("Events", row, "rsvp_url"),
+                "instagram": checked_url("Events", row, "instagram_link"),
+                "image": image_url_path("Events", row),
+                "description_en": html.escape(row["description_en"]),
+                "description_pt": html.escape(row["description_pt"]),
+                "when_en": html.escape(format_when(date, start, end, ENGLISH)),
+                "when_pt": html.escape(format_when(date, start, end, PORTUGUESE)),
+            }
+        )
+
+    return events
+
+
+def campus_today() -> datetime.date:
+    try:
+        return datetime.datetime.now(zoneinfo.ZoneInfo(CAMPUS_TIMEZONE)).date()
+    except zoneinfo.ZoneInfoNotFoundError:
+        return datetime.date.today()
+
+
+def split_events(events: list[dict], today: datetime.date) -> tuple[list[dict], list[dict]]:
+    """An event counts as upcoming through the end of its day on campus."""
+    by_time = sorted(events, key=lambda event: (event["date"], event["start"]))
+    upcoming = [event for event in by_time if event["date"] >= today]
+    past = [event for event in reversed(by_time) if event["date"] < today]
+
+    return upcoming, past[:PAST_EVENTS_SHOWN]
+
+
+def event_values(event: dict, lang: str, is_past: bool) -> dict[str, str]:
+    suffix = "pt" if lang == PORTUGUESE else "en"
     return {
-        "name": display(member["name"]),
-        "plain_name": html.escape(member["name"]),
-        "role": display(translated(member, "role", lang)),
-        "major": display(translated(member, "major", lang)),
-        "photo": html.escape(photo),
-        "linkedin": html.escape(member.get("linkedin", "")),
-        "initials": html.escape(initials(member["name"])),
+        "title": event["title"],
+        "location": event["location"],
+        "instagram": event["instagram"],
+        "image": event["image"],
+        "rsvp": "" if is_past else event["rsvp"],
+        "when": event[f"when_{suffix}"],
+        "description": event[f"description_{suffix}"],
     }
 
 
-def event_values(event: dict[str, str], lang: str) -> dict[str, str]:
-    for field in ("date", "title"):
-        if not event.get(field):
-            sys.exit(f"An [[events]] entry in src/site.toml is missing its {field}: {event}")
-
-    return {field: display(translated(event, field, lang)) for field in ("date", "title", "description", "where")}
+def board_values(member: dict[str, str], lang: str) -> dict[str, str]:
+    return {**member, "role": member["role_pt"] if lang == PORTUGUESE else member["role_en"]}
 
 
 def link_values(config: dict) -> tuple[dict[str, str], list[str]]:
@@ -195,14 +370,27 @@ def check_language_pairs(pages: list[Path]) -> None:
             sys.exit(f"src/{relative} has no other-language version: create src/{twin}")
 
 
-def language_values(config: dict, shared: dict[str, str], lang: str) -> dict[str, str]:
+def language_values(
+    config: dict,
+    shared: dict[str, str],
+    lang: str,
+    upcoming: list[dict],
+    past: list[dict],
+    board: list[dict[str, str]],
+) -> dict[str, str]:
     values = {**shared, "HERO_ALT": html.escape(translated(config["hero"], "alt", lang))}
-    events = [event_values(event, lang) for event in config.get("events", [])]
-    board = [board_values(member, lang) for member in config.get("board", [])]
-    values["EVENTS"] = render_list("event", events, values, lang)
-    values["BOARD_CARDS"] = render_list("board-card", board, values, lang)
+    upcoming_items = [event_values(event, lang, is_past=False) for event in upcoming]
+    past_items = [event_values(event, lang, is_past=True) for event in past]
+    board_items = [board_values(member, lang) for member in board]
+    values["UPCOMING_EVENTS"] = render_list("event", upcoming_items, values, lang)
+    values["PAST_EVENTS"] = render_list("event", past_items, values, lang)
+    values["BOARD_CARDS"] = render_list("board-card", board_items, values, lang)
 
     return values
+
+
+def open_external_links_in_new_tab(page: str) -> str:
+    return re.sub(r'<a\s[^>]*href="https://[^>]*(?=>)', lambda link: f'{link[0]} target="_blank" rel="noopener"', page)
 
 
 def render_page(path: Path, shared_by_lang: dict[str, dict[str, str]]) -> str:
@@ -227,7 +415,7 @@ def render_page(path: Path, shared_by_lang: dict[str, dict[str, str]]) -> str:
     rendered = fill(expand_partials(template, lang), values, str(relative))
     current_link = f'href="{shared["BASE"]}{url_path}"'
 
-    return rendered.replace(current_link, f'{current_link} aria-current="page"')
+    return open_external_links_in_new_tab(rendered.replace(current_link, f'{current_link} aria-current="page"'))
 
 
 def tailwind_binary() -> Path:
@@ -275,7 +463,11 @@ def build(base_path: str, site_url: str | None) -> None:
         "SITE_URL": (site_url or f"https://{domain}").rstrip("/"),
         "YEAR": str(datetime.date.today().year),
     }
-    shared_by_lang = {lang: language_values(config, shared, lang) for lang in (ENGLISH, PORTUGUESE)}
+    upcoming, past = split_events(load_events(config), campus_today())
+    board = load_board(config)
+    shared_by_lang = {
+        lang: language_values(config, shared, lang, upcoming, past, board) for lang in (ENGLISH, PORTUGUESE)
+    }
 
     shutil.rmtree(DIST, ignore_errors=True)
     shutil.copytree(SRC / "assets", DIST / "assets", ignore=shutil.ignore_patterns(".DS_Store", ".gitkeep"))
