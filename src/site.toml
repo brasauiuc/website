@@ -1,0 +1,98 @@
+# ============================================================================
+# THE ONE FILE MOST BOARDS WILL EVER NEED TO EDIT.
+#
+# Links, the event list, and the board list all live here, and every page in
+# both languages picks them up automatically. You can edit this file right on
+# github.com: the site rebuilds itself a minute or two after you save. See README.md.
+#
+# Rules: keep the quotes around values. Lines starting with # are notes.
+# ============================================================================
+
+
+# ---------------------------------------------------------------------------
+# LINKS
+# Replace each "TODO" with the real value. While a value is "TODO", its button
+# does nothing and the build prints a warning.
+# ---------------------------------------------------------------------------
+[links]
+
+# Google Form: prospective/admitted students ask to talk to a student (Prospective)
+INTRO_REQUEST_FORM_URL = "TODO"
+
+# Google Form: alumni join the network (Alumni)
+ALUMNI_FORM_URL = "TODO"
+
+# Instagram profile link (Contact, footer)
+INSTAGRAM_URL = "TODO"
+
+# Chapter email address, without "mailto:" (Contact, footer)
+CONTACT_EMAIL = "TODO"
+
+
+# ---------------------------------------------------------------------------
+# DOMAIN
+# The real domain, without https://, for example "example.org".
+# Setting it here is not enough on its own: see "Custom domain" in README.md.
+# ---------------------------------------------------------------------------
+[site]
+DOMAIN = "DOMAIN_PLACEHOLDER"
+
+
+# ---------------------------------------------------------------------------
+# HERO IMAGE DESCRIPTION (Home page), read aloud by screen readers.
+# Update both if you swap the image.
+# ---------------------------------------------------------------------------
+[hero]
+alt = "Bronze statue of a robed woman with outstretched arms, flanked by two figures, against blurred green trees."
+alt_pt = "Estátua de bronze de uma mulher de túnica com os braços abertos, ao lado de duas figuras, contra árvores verdes desfocadas."
+
+
+# ---------------------------------------------------------------------------
+# EVENTS (Home page, both languages)
+# Each [[events]] block is one row, shown in the order written here.
+# To add an event, copy a whole block. To remove one, delete its whole block.
+# With no blocks left, the page says nothing is scheduled.
+# "description" and "where" are optional, so delete both versions if unused.
+# Every field needs its Portuguese twin ending in _pt, or the build stops, so
+# English text can never end up on a Portuguese page.
+# ---------------------------------------------------------------------------
+[[events]]
+date = "TODO: date"
+date_pt = "TODO: data"
+title = "TODO: first real event"
+title_pt = "TODO: primeiro evento"
+description = "TODO: one line about the event."
+description_pt = "TODO: uma linha sobre o evento."
+where = "TODO: place"
+where_pt = "TODO: local"
+
+
+# ---------------------------------------------------------------------------
+# BOARD (Board page, both languages)
+# Each [[board]] block is one card, shown in the order written here.
+# "role" and "major" need Portuguese twins ending in _pt. A name stays the same.
+# "photo" and "linkedin" are optional, so delete those lines if unused.
+#   photo    = a file name inside src/assets/board/, for example "ana.jpg"
+#              (square, about 400x400, under 200 KB)
+#   linkedin = the full https://www.linkedin.com/in/... link
+# ---------------------------------------------------------------------------
+[[board]]
+name = "TODO"
+role = "TODO: Role"
+role_pt = "TODO: Cargo"
+major = "TODO: Major"
+major_pt = "TODO: Curso"
+
+[[board]]
+name = "TODO"
+role = "TODO: Role"
+role_pt = "TODO: Cargo"
+major = "TODO: Major"
+major_pt = "TODO: Curso"
+
+[[board]]
+name = "TODO"
+role = "TODO: Role"
+role_pt = "TODO: Cargo"
+major = "TODO: Major"
+major_pt = "TODO: Curso"

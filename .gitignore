@@ -1,0 +1,8 @@
+# Built in CI, never committed
+dist/
+
+# The Tailwind program, downloaded by build.py
+.tools/
+
+__pycache__/
+.DS_Store

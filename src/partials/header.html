@@ -1,0 +1,30 @@
+<!-- HEADER: shared by every page. To add a menu item, edit nav-links.html instead. -->
+<a class="skip-link" href="#main">Skip to main content</a>
+<header class="absolute inset-x-0 top-0 z-20">
+  <div class="wrap flex items-center justify-between gap-3 py-5">
+    <a class="brand" href="{{BASE}}/">
+      <img src="{{BASE}}/assets/logo-120.png" width="35" height="40" alt="">
+      <span class="sr-only min-[340px]:not-sr-only">BRASA at UIUC</span>
+    </a>
+    <div class="flex items-center gap-2 min-[400px]:gap-3 lg:gap-8">
+      <nav class="nav-links hidden items-center gap-7 lg:flex" aria-label="Main">
+        {{> nav-links}}
+      </nav>
+      <!-- LANGUAGE BUTTON: goes to this same page in the other language. -->
+      <div class="lang-switch" role="group" aria-label="Language">
+        <span aria-current="true">EN</span>
+        <a href="{{LANG_SWITCH_URL}}" hreflang="pt-BR" lang="pt-BR" aria-label="Ver esta página em português">PT</a>
+      </div>
+      <!-- No JavaScript needed: <details> opens and closes by itself, and works with the keyboard. -->
+      <details class="menu lg:hidden">
+        <summary>
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3.5h14M1 8h14M1 12.5h14" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="sr-only min-[380px]:not-sr-only">Menu</span>
+        </summary>
+        <nav class="nav-links menu-panel" aria-label="Main menu">
+          {{> nav-links}}
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

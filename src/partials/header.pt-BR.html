@@ -1,0 +1,30 @@
+<!-- CABEÇALHO: versão em português de header.html. Para mudar o menu, edite nav-links.pt-BR.html. -->
+<a class="skip-link" href="#main">Pular para o conteúdo principal</a>
+<header class="absolute inset-x-0 top-0 z-20">
+  <div class="wrap flex items-center justify-between gap-3 py-5">
+    <a class="brand" href="{{BASE}}/pt/">
+      <img src="{{BASE}}/assets/logo-120.png" width="35" height="40" alt="">
+      <span class="sr-only min-[340px]:not-sr-only">BRASA at UIUC</span>
+    </a>
+    <div class="flex items-center gap-2 min-[400px]:gap-3 lg:gap-8">
+      <nav class="nav-links hidden items-center gap-7 lg:flex" aria-label="Principal">
+        {{> nav-links}}
+      </nav>
+      <!-- BOTÃO DE IDIOMA: leva a esta mesma página no outro idioma. -->
+      <div class="lang-switch" role="group" aria-label="Idioma">
+        <a href="{{LANG_SWITCH_URL}}" hreflang="en" lang="en" aria-label="View this page in English">EN</a>
+        <span aria-current="true">PT</span>
+      </div>
+      <!-- Sem JavaScript: <details> abre e fecha sozinho e funciona com o teclado. -->
+      <details class="menu lg:hidden">
+        <summary>
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3.5h14M1 8h14M1 12.5h14" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="sr-only min-[380px]:not-sr-only">Menu</span>
+        </summary>
+        <nav class="nav-links menu-panel" aria-label="Menu principal">
+          {{> nav-links}}
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

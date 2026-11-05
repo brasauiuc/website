@@ -1,0 +1,53 @@
+<!--
+title: BRASA at UIUC | Associação de Estudantes Brasileiros
+description: Todo estudante brasileiro em Illinois, de ontem, de hoje e de amanhã, a uma apresentação de distância de quem pode ajudar.
+-->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="hero-media">
+    {{> hero-image}}
+  </div>
+  <div class="wrap hero-inner">
+    <div class="hero-content">
+      <p class="eyebrow">Associação de Estudantes Brasileiros</p>
+      <h1 id="hero-title">BRASA at&nbsp;UIUC</h1>
+      <p class="tagline">A casa dos brasileiros em Illinois.</p>
+      <p class="mission">Todo estudante brasileiro em Illinois — de ontem, de hoje e de amanhã — a uma apresentação de distância de quem pode ajudar.</p>
+    </div>
+  </div>
+</section>
+
+<div class="tricolor"></div>
+
+<section class="section section-compact" id="sobre">
+  <p class="label">Sobre</p>
+  <h2>Mais que uma comunidade. Uma rede.</h2>
+  <p class="lead">A BRASA at UIUC mantém um cadastro de estudantes e ex-alunos brasileiros de Illinois. Quando alguém precisa de um contato, faz o pedido por um formulário e um membro da diretoria faz a apresentação pessoalmente. Não existe diretório público: os dados dos membros nunca aparecem neste site.</p>
+
+  <div class="grid-lines md:grid-cols-3">
+    <div class="cell">
+      <p class="num">01</p>
+      <h3>Comunidade</h3>
+      <p>Encontre os outros brasileiros no campus e um pedaço de casa em Champaign-Urbana.</p>
+    </div>
+    <div class="cell">
+      <p class="num">02</p>
+      <h3>Carreira</h3>
+      <p>Apresentações a estudantes e ex-alunos da sua área, feitas pela diretoria quando você pedir.</p>
+    </div>
+    <div class="cell">
+      <p class="num">03</p>
+      <h3>Caminho</h3>
+      <p>Foi aprovado ou está pensando em se candidatar? <a class="link" href="{{BASE}}/pt/prospective.html">Converse com um estudante brasileiro do seu curso.</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="eventos">
+  <p class="label">Eventos</p>
+  <h2>Venha dar um oi.</h2>
+  <!-- Os eventos abaixo vêm de src/site.toml. Adicione ou remova por lá. -->
+  <div class="rows">
+    {{#EVENTS}}{{EVENTS}}{{/EVENTS}}
+    {{^EVENTS}}<p class="py-6 text-muted">Nada marcado no momento. Volte em breve.</p>{{/EVENTS}}
+  </div>
+</section>
