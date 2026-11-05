@@ -476,6 +476,10 @@
     max-width: 78ch;
   }
 
+  .section-compact .lead {
+    max-width: none;
+  }
+
   .section-compact .grid-lines {
     margin-top: 32px;
   }
